@@ -112,16 +112,12 @@ public class AliyunOSSPublisher extends Publisher {
 
 		public FormValidation doCheckAccount(
 				@QueryParameter String aliyunAccessKey,
-				@QueryParameter String aliyunSecretKey,
-				@QueryParameter String aliyunEndPointSuffix) {
+				@QueryParameter String aliyunSecretKey) {
 			if (Utils.isNullOrEmpty(aliyunAccessKey)) {
 				return FormValidation.error("阿里云AccessKey不能为空！");
 			}
 			if (Utils.isNullOrEmpty(aliyunSecretKey)) {
 				return FormValidation.error("阿里云SecretKey不能为空！");
-			}
-			if (Utils.isNullOrEmpty(aliyunEndPointSuffix)) {
-				return FormValidation.error("阿里云EndPointSuffix不能为空！");
 			}
 			try {
 				AliyunOSSClient.validateAliyunAccount(aliyunAccessKey,
@@ -179,7 +175,7 @@ public class AliyunOSSPublisher extends Publisher {
 	}
 
 	@Override
-	public boolean perform(AbstractBuild build, Launcher launcher,BuildListener listener) 
+	public boolean perform(AbstractBuild build, Launcher launcher,BuildListener listener)
 			throws InterruptedException, IOException {
 		this.logger = listener.getLogger();
 		final boolean buildFailed = build.getResult() == Result.FAILURE;
@@ -187,7 +183,7 @@ public class AliyunOSSPublisher extends Publisher {
 			logger.println("Job构建失败,无需上传Aritfacts到阿里云OSS.");
 			return true;
 		}
-		
+
 		// Resolve file path
 		String expFP = Utils.replaceTokens(build, listener, filesPath);
 
@@ -202,16 +198,19 @@ public class AliyunOSSPublisher extends Publisher {
 		}
 		if (!Utils.isNullOrEmpty(expVP) && !expVP.endsWith(Utils.FWD_SLASH)) {
 			expVP = expVP.trim() + Utils.FWD_SLASH;
-		}        
-		
+		}
+
 		boolean success = false;
 		try {
+			listener.getLogger().println("aliyunAccessKey:" + this.getDescriptor().aliyunAccessKey);
+			listener.getLogger().println("aliyunSecretKey:" + this.getDescriptor().aliyunSecretKey);
+			listener.getLogger().println("aliyunEndPointSuffix:" + this.getDescriptor().aliyunEndPointSuffix);
 			int filesUploaded = AliyunOSSClient.upload(build, listener,
                     this.getDescriptor().aliyunAccessKey,
 					this.getDescriptor().aliyunSecretKey,
                     this.getDescriptor().aliyunEndPointSuffix,
                     bucketName, expFP, expVP);
-			if (filesUploaded > 0) { 
+			if (filesUploaded > 0) {
 				listener.getLogger().println("上传Artifacts到阿里云OSS成功，上传文件个数:" + filesUploaded);
 				success = true;
 			}
