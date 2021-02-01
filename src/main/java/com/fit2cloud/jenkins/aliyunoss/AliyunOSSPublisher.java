@@ -134,8 +134,7 @@ public class AliyunOSSPublisher extends Publisher {
 				return FormValidation.error("Bucket不能为空！");
 			}
 			try {
-				AliyunOSSClient.validateOSSBucket(aliyunAccessKey,
-						aliyunSecretKey, val);
+				AliyunOSSClient.validateOSSBucket(aliyunAccessKey,aliyunSecretKey, val);
 			} catch (Exception e) {
 				return FormValidation.error(e.getMessage());
 			}
@@ -200,11 +199,8 @@ public class AliyunOSSPublisher extends Publisher {
 			expVP = expVP.trim() + Utils.FWD_SLASH;
 		}
 
-		boolean success = false;
+		boolean flag = false;
 		try {
-			listener.getLogger().println("aliyunAccessKey:" + this.getDescriptor().aliyunAccessKey);
-			listener.getLogger().println("aliyunSecretKey:" + this.getDescriptor().aliyunSecretKey);
-			listener.getLogger().println("aliyunEndPointSuffix:" + this.getDescriptor().aliyunEndPointSuffix);
 			int filesUploaded = AliyunOSSClient.upload(build, listener,
                     this.getDescriptor().aliyunAccessKey,
 					this.getDescriptor().aliyunSecretKey,
@@ -212,16 +208,16 @@ public class AliyunOSSPublisher extends Publisher {
                     bucketName, expFP, expVP);
 			if (filesUploaded > 0) {
 				listener.getLogger().println("上传Artifacts到阿里云OSS成功，上传文件个数:" + filesUploaded);
-				success = true;
+				flag = true;
 			}
 
 		} catch (Exception e) {
 			this.logger.println("上传Artifact到阿里云OSS失败，错误消息如下:");
 			this.logger.println(e.getMessage());
 			e.printStackTrace(this.logger);
-			success = false;
+			flag = false;
 		}
-		return success;
+		return flag;
 	}
 
 }

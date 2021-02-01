@@ -10,6 +10,8 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -31,15 +33,28 @@ public class AliyunOSSClient {
     public static boolean validateOSSBucket(String aliyunAccessKey,
                                             String aliyunSecretKey, String bucketName) throws AliyunOSSException {
         try {
-            OSSClient client = new OSSClient(aliyunAccessKey, aliyunSecretKey);
-            return client.doesBucketExist(bucketName);
+            //查找当前账号的所有bucket
+            OSSClient c = new OSSClient(aliyunAccessKey, aliyunSecretKey);
+            List<Bucket> buckets = c.listBuckets();
+            boolean flag=false;
+            for (Bucket bucket : buckets) {
+                if (bucketName.equals(bucket.getName())) {
+                    flag=true;
+                }
+            }
+            //判断bucket是否存在
+            if (flag){
+                return true;
+            }else {
+                throw new AliyunOSSException("验证Bucket名称失败：当前账号不存在此bucketName！");
+            }
         } catch (Exception e) {
             throw new AliyunOSSException("验证Bucket名称失败：" + e.getMessage());
         }
     }
 
 
-    public static int upload(AbstractBuild<?, ?> build, BuildListener listener,
+    public static int upload(AbstractBuild build, BuildListener listener,
                              String aliyunAccessKey, String aliyunSecretKey, String aliyunEndPointSuffix, String bucketName, String expFP, String expVP) throws AliyunOSSException {
         OSSClient c = new OSSClient(aliyunAccessKey, aliyunSecretKey);
         List<Bucket> buckets = c.listBuckets();
@@ -135,7 +150,13 @@ public class AliyunOSSClient {
                         }
                         long endTime = System.currentTimeMillis();
                         listener.getLogger().println("Uploaded object [" + key + "] in " + getTime(endTime - startTime));
-                        listener.getLogger().println("版本下载地址:" + "http://" + bucketName + "." + location + aliyunEndPointSuffix + "/" + key);
+                        // 创建OSSClient实例。
+                        OSSClient ossClient = new OSSClient(endpoint, aliyunAccessKey, aliyunSecretKey);
+                        // 设置URL过期时间为10小时。
+                        Date expiration = new Date(new Date().getTime() + 3600 * 10000);
+                        // 生成以GET方法访问的签名URL，访客可以直接通过浏览器访问相关内容。
+                        URL url = ossClient.generatePresignedUrl(bucketName, key, expiration);
+                        listener.getLogger().println("链接下载地址:" + url.toString());
                         filesUploaded++;
                     }
                 } else {

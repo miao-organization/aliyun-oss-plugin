@@ -9,7 +9,7 @@
         <f:password/>
       </f:entry>
       <f:entry title="阿里云EndPoint地址" field="aliyunEndPointSuffix" help="/plugin/aliyun-oss/help-aliyunEndPoint.html">
-        <f:textbox default="oss-cn-beijing.aliyuncs.com" />
+        <f:textbox default=".aliyuncs.com" />
       </f:entry>
 		<f:validateButton
 			title="验证账户" progress="验证中..."
