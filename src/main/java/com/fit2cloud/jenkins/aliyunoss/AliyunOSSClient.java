@@ -55,7 +55,7 @@ public class AliyunOSSClient {
 
 
     public static int upload(AbstractBuild build, BuildListener listener,
-                             String aliyunAccessKey, String aliyunSecretKey, String aliyunEndPointSuffix, String bucketName, String expFP, String expVP) throws AliyunOSSException {
+                             String aliyunAccessKey, String aliyunSecretKey, String aliyunEndPointSuffix, String bucketName, String expFP, String expVP,String expiresTime) throws AliyunOSSException {
         OSSClient c = new OSSClient(aliyunAccessKey, aliyunSecretKey);
         List<Bucket> buckets = c.listBuckets();
         String location = null;
@@ -150,13 +150,13 @@ public class AliyunOSSClient {
                         }
                         long endTime = System.currentTimeMillis();
                         listener.getLogger().println("Uploaded object [" + key + "] in " + getTime(endTime - startTime));
-                        // 创建OSSClient实例。
-                        OSSClient ossClient = new OSSClient(endpoint, aliyunAccessKey, aliyunSecretKey);
-                        // 设置URL过期时间为10小时。
-                        Date expiration = new Date(new Date().getTime() + 3600 * 10000);
-                        // 生成以GET方法访问的签名URL，访客可以直接通过浏览器访问相关内容。
-                        URL url = ossClient.generatePresignedUrl(bucketName, key, expiration);
-                        listener.getLogger().println("链接下载地址:" + url.toString());
+                        if (!"no".equals(expiresTime)){
+                            // 创建OSSClient实例。
+                            OSSClient ossClient = new OSSClient(endpoint, aliyunAccessKey, aliyunSecretKey);
+                            // 生成以GET方法访问的签名URL，访客可以直接通过浏览器访问相关内容。
+                            URL url = ossClient.generatePresignedUrl(bucketName, key, Utils.getExpiresTime(expiresTime));
+                            listener.getLogger().println("链接下载地址:" + url.toString());
+                        }
                         filesUploaded++;
                     }
                 } else {

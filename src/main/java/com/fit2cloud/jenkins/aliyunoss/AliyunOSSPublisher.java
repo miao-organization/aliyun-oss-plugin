@@ -29,7 +29,16 @@ public class AliyunOSSPublisher extends Publisher {
 	String bucketName;
 	String filesPath;
 	String objectPrefix;
-	
+	String expiresTime;
+
+	public String getExpiresTime() {
+		return expiresTime;
+	}
+
+	public void setExpiresTime(String expiresTime) {
+		this.expiresTime = expiresTime;
+	}
+
 	public String getBucketName() {
 		return bucketName;
 	}
@@ -55,10 +64,11 @@ public class AliyunOSSPublisher extends Publisher {
 	}
 
 	@DataBoundConstructor
-	public AliyunOSSPublisher(final String bucketName, final String filesPath, final String objectPrefix) {
+	public AliyunOSSPublisher(final String bucketName, final String filesPath, final String objectPrefix,final String expiresTime) {
 		this.bucketName = bucketName;
 		this.filesPath = filesPath;
 		this.objectPrefix = objectPrefix;
+		this.expiresTime = expiresTime;
 	}
 
 	public BuildStepMonitor getRequiredMonitorService() {
@@ -205,7 +215,7 @@ public class AliyunOSSPublisher extends Publisher {
                     this.getDescriptor().aliyunAccessKey,
 					this.getDescriptor().aliyunSecretKey,
                     this.getDescriptor().aliyunEndPointSuffix,
-                    bucketName, expFP, expVP);
+                    bucketName, expFP, expVP,expiresTime);
 			if (filesUploaded > 0) {
 				listener.getLogger().println("上传Artifacts到阿里云OSS成功，上传文件个数:" + filesUploaded);
 				flag = true;

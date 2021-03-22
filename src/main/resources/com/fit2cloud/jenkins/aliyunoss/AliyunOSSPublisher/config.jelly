@@ -9,4 +9,13 @@
   	<f:entry title="Object前缀" field="objectPrefix" help="/plugin/aliyun-oss/help-objectPrefix.html">
     	<f:textbox/>
  	</f:entry>
+ 	<f:entry title="文件下载链接" field="expiresTime" help="/plugin/aliyun-oss/help-aliyunExpires.html">
+        <select name="expiresTime">
+           <option value="no">不显示</option>
+           <option value="day">显示，默认一天</option>
+           <option value="week">显示，默认一周</option>
+           <option value="month">显示，默认一月</option>
+           <option value="permanent">显示，默认永久</option>
+        </select>
+    </f:entry>
 </j:jelly>
