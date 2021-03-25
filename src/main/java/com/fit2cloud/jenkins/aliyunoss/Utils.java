@@ -41,7 +41,7 @@ public class Utils {
             cal.add(Calendar.DATE, 7);
         } else if ("month".equals(timeType)) {
             cal.add(Calendar.MONTH, 1);
-        } else if ("month".equals(timeType)) {
+        } else if ("year".equals(timeType)) {
             cal.add(Calendar.YEAR, 1);
         } else if ("permanent".equals(timeType)) {
             cal.add(Calendar.YEAR, 99);
