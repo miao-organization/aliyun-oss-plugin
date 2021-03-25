@@ -1,6 +1,7 @@
 package com.fit2cloud.jenkins.aliyunoss;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -32,18 +33,19 @@ public class Utils {
     }
 
     public static Date getExpiresTime(String timeType) {
-        long expiresTime = 0;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
         if ("day".equals(timeType)) {
-            expiresTime = 3600 * 24000;
+            cal.add(Calendar.DATE, 1);
         } else if ("week".equals(timeType)) {
-            expiresTime = 3600 * 24000 * 7;
+            cal.add(Calendar.DATE, 7);
         } else if ("month".equals(timeType)) {
-            expiresTime = 3600 * 24000 * 30;
+            cal.add(Calendar.MONTH, 1);
+        } else if ("month".equals(timeType)) {
+            cal.add(Calendar.YEAR, 1);
         } else if ("permanent".equals(timeType)) {
-            expiresTime = 3600 * 24000 * 365 * 99;
+            cal.add(Calendar.YEAR, 99);
         }
-        Date expiration = new Date(new Date().getTime() + expiresTime);
-        return expiration;
+        return cal.getTime();
     }
-
 }
